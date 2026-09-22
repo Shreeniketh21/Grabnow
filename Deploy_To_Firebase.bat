@@ -28,10 +28,10 @@ if %ERRORLEVEL% NEQ 0 (
 
 echo.
 echo ========================================================
-echo [Step 2/2] Deploying website to Firebase Hosting...
+echo [Step 2/2] Deploying Frontend & Dynamic Cloud Functions...
 echo ========================================================
 echo.
-call npx --yes firebase-tools deploy --only hosting
+call npx --yes firebase-tools deploy --only hosting,functions
 if %ERRORLEVEL% EQU 0 (
     echo.
     echo ========================================================

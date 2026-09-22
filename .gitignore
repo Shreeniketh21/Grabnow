@@ -36,3 +36,7 @@ website/user_cookies.txt
 local.properties
 /keystore.properties
 .kotlin
+
+# Cloud Functions Binaries
+functions/bin/*
+!functions/bin/.gitkeep

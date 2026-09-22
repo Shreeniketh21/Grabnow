@@ -1,0 +1,2 @@
+# This directory holds the yt-dlp standalone Linux binary.
+# It is downloaded automatically during Cloud Build via scripts/download-ytdlp.js

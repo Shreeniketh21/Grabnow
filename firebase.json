@@ -12,9 +12,17 @@
     ],
     "rewrites": [
       {
+        "source": "/api/**",
+        "function": "grabnow"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
     ]
+  },
+  "functions": {
+    "source": "functions",
+    "runtime": "nodejs20"
   }
 }

@@ -218,7 +218,16 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify({ url })
       });
 
-      const data = await response.json();
+      let data;
+      const rawText = await response.text();
+      try {
+        data = JSON.parse(rawText);
+      } catch (_) {
+        if (!response.ok) {
+          throw new Error(`Backend Error (${response.status}): Please verify the Cloud Function is deployed or try again in a moment.`);
+        }
+        throw new Error('Received non-JSON response from server.');
+      }
 
       if (!response.ok) {
         const errorObj = new Error(data.error || 'Unable to extract media from this link.');
