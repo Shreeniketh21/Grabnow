@@ -1,8 +1,24 @@
 {
-  "buildCommand": null,
-  "outputDirectory": "website",
+  "version": 2,
+  "builds": [
+    {
+      "src": "website/api/index.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "website/**/*.{html,css,js,png,jpg,svg,ico,json}",
+      "use": "@vercel/static",
+      "config": { "excludeGlobs": ["website/api/**", "website/node_modules/**", "website/server.js", "website/extractor.js", "website/bulk_crawler.js", "website/*.py", "website/downloads/**", "website/chrome_cookies_temp/**", "website/*.bat"] }
+    }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "website/api/index.js" },
+    { "src": "/(.*)", "dest": "website/$1" }
+  ],
   "installCommand": "cd website && npm install",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/$1" }
-  ]
+  "functions": {
+    "website/api/index.js": {
+      "maxDuration": 60
+    }
+  }
 }

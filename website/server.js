@@ -20,7 +20,9 @@ const { crawlBulkMedia } = require('./bulk_crawler');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const DOWNLOADS_DIR = path.join(__dirname, 'downloads');
+const DOWNLOADS_DIR = process.env.VERCEL
+  ? path.join('/tmp', 'downloads')
+  : path.join(__dirname, 'downloads');
 if (!fs.existsSync(DOWNLOADS_DIR)) {
   fs.mkdirSync(DOWNLOADS_DIR, { recursive: true });
 }
@@ -1143,9 +1145,16 @@ app.post('/api/download/batch-retry/:batchId/:itemId', (req, res) => {
   res.json({ success: true, message: `Item #${item.index} queued for retry.` });
 });
 
-app.listen(PORT, () => {
-  console.log(`===========================================`);
-  console.log(`🚀 GrabNow Advanced Engine running on http://localhost:${PORT}`);
-  console.log(`⚡ Powered by yt-dlp, gallery-dl & FFmpeg`);
-  console.log(`===========================================`);
-});
+// Only start listening when running locally (not on Vercel serverless)
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`===========================================`);
+    console.log(`🚀 GrabNow Advanced Engine running on http://localhost:${PORT}`);
+    console.log(`⚡ Powered by yt-dlp, gallery-dl & FFmpeg`);
+    console.log(`===========================================`);
+  });
+}
+
+// Export for Vercel serverless functions
+module.exports = app;
+

@@ -11,6 +11,10 @@
     "archiver": "^8.0.0",
     "cors": "^2.8.5",
     "express": "^4.21.2",
-    "firebase": "^12.19.0"
+    "firebase": "^12.19.0",
+    "yt-dlp-exec": "^1.0.2"
+  },
+  "allowScripts": {
+    "yt-dlp-exec@1.0.2": true
   }
 }

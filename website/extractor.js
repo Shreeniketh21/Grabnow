@@ -2,17 +2,31 @@ const { execFile } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-// Discovered paths
+// Cross-platform path detection (works on local Windows AND Vercel Linux)
+const isVercel = !!process.env.VERCEL;
+
+// yt-dlp: prefer local install, then npm package, then bare command
 const defaultYtDlp = 'C:\\Users\\G Shreeniketh\\AppData\\Local\\Programs\\Python\\Python313\\Scripts\\yt-dlp.exe';
-const ytDlpPath = fs.existsSync(defaultYtDlp) ? defaultYtDlp : 'yt-dlp';
+let ytDlpPath;
+if (!isVercel && fs.existsSync(defaultYtDlp)) {
+  ytDlpPath = defaultYtDlp;
+} else {
+  try {
+    ytDlpPath = require('yt-dlp-exec').path;
+  } catch (_) {
+    ytDlpPath = 'yt-dlp';
+  }
+}
+
 const defaultGalleryDl = 'C:\\Users\\G Shreeniketh\\AppData\\Local\\Programs\\Python\\Python313\\Scripts\\gallery-dl.exe';
-const galleryDlPath = fs.existsSync(defaultGalleryDl) ? defaultGalleryDl : 'gallery-dl';
-const pythonBin = 'C:\\Users\\G Shreeniketh\\AppData\\Local\\Programs\\Python\\Python313\\python.exe';
+const galleryDlPath = (!isVercel && fs.existsSync(defaultGalleryDl)) ? defaultGalleryDl : 'gallery-dl';
+const pythonBin = isVercel ? 'python3' : 'C:\\Users\\G Shreeniketh\\AppData\\Local\\Programs\\Python\\Python313\\python.exe';
 const igExtractorScript = path.join(__dirname, 'instagram_extractor.py');
 const redditExtractorScript = path.join(__dirname, 'reddit_extractor.py');
-const nodeBin = 'C:\\Program Files\\nodejs\\node.exe';
-const ffmpegDir = 'C:\\Users\\G Shreeniketh\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-9.0.1-full_build\\bin';
-const hasFfmpeg = fs.existsSync(path.join(ffmpegDir, 'ffmpeg.exe'));
+const nodeBin = isVercel ? 'node' : 'C:\\Program Files\\nodejs\\node.exe';
+const ffmpegDir = isVercel ? '' : 'C:\\Users\\G Shreeniketh\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-9.0.1-full_build\\bin';
+const hasFfmpeg = !isVercel && ffmpegDir && fs.existsSync(path.join(ffmpegDir, 'ffmpeg.exe'));
+
 
 const BROWSER_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36';
 
