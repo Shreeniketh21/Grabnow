@@ -1,0 +1,8 @@
+{
+  "buildCommand": null,
+  "outputDirectory": "website",
+  "installCommand": "cd website && npm install",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/$1" }
+  ]
+}
