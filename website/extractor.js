@@ -85,6 +85,7 @@ function getCommonArgs(impersonate = true, legacySSL = false, allowPlaylist = fa
   if (hasFfmpeg) {
     args.push('--ffmpeg-location', ffmpegDir);
   }
+  args.push('--extractor-args', 'youtube:player_client=android,ios,mweb,web');
   const userCookiePath = path.join(__dirname, 'user_cookies.txt');
   if (fs.existsSync(userCookiePath)) {
     args.push('--cookies', userCookiePath);
@@ -100,7 +101,8 @@ function getDownloadArgs(impersonate = false, legacySSL = false) {
     '--windows-filenames',
     '--no-mtime',
     '--concurrent-fragments', '4',
-    '--buffer-size', '16M'
+    '--buffer-size', '16M',
+    '--extractor-args', 'youtube:player_client=android,ios,mweb,web'
   ];
   if (legacySSL) {
     args.push('--legacy-server-connect');
@@ -192,6 +194,11 @@ async function resolveUrl(inputUrl) {
     if (match) {
       try { cleanUrl = decodeURIComponent(match[1]); } catch (e) {}
     }
+  }
+
+  // Normalize YouTube Music URLs to standard YouTube watch URLs
+  if (/music\.youtube\.com/i.test(cleanUrl)) {
+    cleanUrl = cleanUrl.replace(/music\.youtube\.com/i, 'www.youtube.com');
   }
 
   // Check for VK URLs: directly normalize and bypass Node fetch (Node fetch fails TLS handshake on VK)
@@ -989,33 +996,96 @@ async function extractMediaDetails(inputUrl) {
   // If yt-dlp extracted playlist entries even though not initially marked as playlist
   if (ytDlpData && (ytDlpData._type === 'playlist' || (ytDlpData.entries && ytDlpData.entries.length > 1))) {
     const rawEntries = (ytDlpData.entries || []).filter(Boolean);
-    const items = rawEntries.map((e, idx) => {
-      const thumb = (e && e.thumbnails && e.thumbnails.length)
-        ? e.thumbnails[e.thumbnails.length - 1].url
-        : (e && e.thumbnail ? e.thumbnail : '');
-      return {
-        index: idx + 1,
-        id: (e && e.id) || `entry_${idx + 1}`,
-        title: unescapeHtml(e && e.title) || `Video ${idx + 1}`,
-        url: e && e.url ? (e.url.startsWith('http') ? e.url.replace(/&amp;/g, '&') : `https://www.youtube.com/watch?v=${e.url}`) : targetUrl,
-        duration: formatDuration(e && e.duration),
-        durationSeconds: (e && e.duration) || 0,
-        thumbnail: thumb,
-        uploader: (e && e.uploader) || ytDlpData.uploader || 'Creator'
-      };
-    });
+    const isInstagram = /instagram\.com/i.test(targetUrl) || (ytDlpData.extractor_key && /instagram/i.test(ytDlpData.extractor_key));
 
-    return {
-      type: 'playlist',
-      id: ytDlpData.id || 'playlist_' + Date.now().toString(36),
-      title: ytDlpData.title || 'Playlist Collection',
-      uploader: ytDlpData.uploader || ytDlpData.channel || 'Media Collection',
-      thumbnail: items[0]?.thumbnail || '',
-      itemCount: items.length,
-      webpage_url: targetUrl,
-      extractor: ytDlpData.extractor_key || 'Playlist',
-      items: items
-    };
+    // If 0 entries found (e.g. Instagram restricted post without cookies)
+    if (rawEntries.length === 0) {
+      if (isInstagram) {
+        const authErr = new Error('Instagram requires session authentication to view this post. Please use the ⚡ Live Tab Harvester directly from your Chrome tab or paste your session cookies in Cookies & Auth.');
+        authErr.isInstagramAuthRequired = true;
+        throw authErr;
+      }
+      ytDlpData = null; // Do not return an empty playlist, fall through to deep scraping / error
+    } else {
+      const isCarousel = isInstagram || /carousel/i.test(ytDlpData.title || '') || rawEntries.some(e => (!e.formats || e.formats.length === 0) && (e.thumbnails && e.thumbnails.length > 0));
+
+      if (isCarousel) {
+        const items = rawEntries.map((e, idx) => {
+          const formats = e.formats || [];
+          const thumbs = e.thumbnails || [];
+          const bestThumb = thumbs.length ? thumbs[thumbs.length - 1] : { url: e.thumbnail || '' };
+          const videoFormat = formats.filter(f => f.vcodec && f.vcodec !== 'none').pop();
+          const videoUrl = videoFormat ? videoFormat.url : (e.url && e.url.startsWith('http') ? e.url : null);
+          const isVideo = Boolean(videoUrl && (videoFormat || e.ext === 'mp4' || (e.duration && e.duration > 0)));
+          const mediaUrl = videoUrl || (e.url && e.url.startsWith('http') ? e.url : bestThumb.url);
+          const width = bestThumb.width || (videoFormat && videoFormat.width);
+          const height = bestThumb.height || (videoFormat && videoFormat.height);
+          const resLabel = (width && height) ? `${width}×${height}` : (isVideo ? 'HD Video' : 'HD Photo');
+
+          return {
+            id: `carousel_${e.id || (idx + 1)}`,
+            url: mediaUrl,
+            thumbnail: bestThumb.url || mediaUrl,
+            resolution: resLabel,
+            ext: isVideo ? 'mp4' : 'jpg',
+            mediaType: isVideo ? 'video' : 'image',
+            isVideo: isVideo,
+            title: unescapeHtml(e.title) || `Slide ${idx + 1}`,
+            duration: e.duration ? formatDuration(e.duration) : (isVideo ? 'Video' : '')
+          };
+        }).filter(it => it.url);
+
+        if (items.length > 0) {
+          const carouselResult = {
+            type: 'carousel',
+            id: ytDlpData.id || 'carousel_' + Date.now().toString(36),
+            title: unescapeHtml(ytDlpData.title) || (isInstagram ? 'Instagram Carousel' : 'Media Gallery'),
+            uploader: unescapeHtml(ytDlpData.uploader || ytDlpData.channel || (isInstagram ? 'Instagram Creator' : 'Creator')),
+            thumbnail: items[0]?.thumbnail || '',
+            itemCount: items.length,
+            webpage_url: targetUrl,
+            extractor: isInstagram ? 'Instagram Carousel' : (ytDlpData.extractor_key || 'Carousel'),
+            items: items
+          };
+          setCachedMedia(cleanUrl, carouselResult);
+          setCachedMedia(targetUrl, carouselResult);
+          return carouselResult;
+        }
+      } else {
+        const items = rawEntries.map((e, idx) => {
+          const thumb = (e && e.thumbnails && e.thumbnails.length)
+            ? e.thumbnails[e.thumbnails.length - 1].url
+            : (e && e.thumbnail ? e.thumbnail : '');
+          return {
+            index: idx + 1,
+            id: (e && e.id) || `entry_${idx + 1}`,
+            title: unescapeHtml(e && e.title) || `Video ${idx + 1}`,
+            url: e && e.url ? (e.url.startsWith('http') ? e.url.replace(/&amp;/g, '&') : `https://www.youtube.com/watch?v=${e.url}`) : targetUrl,
+            duration: formatDuration(e && e.duration),
+            durationSeconds: (e && e.duration) || 0,
+            thumbnail: thumb,
+            uploader: (e && e.uploader) || ytDlpData.uploader || 'Creator'
+          };
+        }).filter(it => it.url);
+
+        if (items.length > 0) {
+          const playlistResult = {
+            type: 'playlist',
+            id: ytDlpData.id || 'playlist_' + Date.now().toString(36),
+            title: unescapeHtml(ytDlpData.title) || 'Playlist Collection',
+            uploader: ytDlpData.uploader || ytDlpData.channel || 'Media Collection',
+            thumbnail: items[0]?.thumbnail || '',
+            itemCount: items.length,
+            webpage_url: targetUrl,
+            extractor: ytDlpData.extractor_key || 'Playlist',
+            items: items
+          };
+          setCachedMedia(cleanUrl, playlistResult);
+          setCachedMedia(targetUrl, playlistResult);
+          return playlistResult;
+        }
+      }
+    }
   }
 
   // Step 5.4: Format and return single video from yt-dlp
@@ -1131,8 +1201,24 @@ async function extractMediaDetails(inputUrl) {
   }
 
   // Step 8.6: Special handling for Hotstar / JioHotstar
-  if (/hotstar\.com/i.test(targetUrl) || lastErrorMsg.includes('registered users') || lastErrorMsg.includes('cookies-from-browser')) {
+  if (/hotstar\.com/i.test(targetUrl)) {
     throw new Error('Hotstar / JioHotstar requires an account login or guest browser session cookies for this content. Please open the link in your browser or paste your cookies in settings to download.');
+  }
+
+  // Step 8.7: Special handling for Instagram restricted/private posts
+  if (/instagram\.com/i.test(targetUrl)) {
+    if (lastErrorMsg.includes('empty media response') || lastErrorMsg.includes('login') || lastErrorMsg.includes('cookies') || lastErrorMsg.includes('401') || lastErrorMsg.includes('403')) {
+      const igErr = new Error('Instagram requires session authentication to view this post. Please use the ⚡ Live Tab Harvester directly from your Chrome tab or paste your session cookies in Cookies & Auth.');
+      igErr.isInstagramAuthRequired = true;
+      throw igErr;
+    }
+  }
+
+  // Step 8.8: Special handling for YouTube / YouTube Music bot & sign-in checks
+  if (/youtube\.com|youtu\.be/i.test(targetUrl)) {
+    if (lastErrorMsg.includes('bot') || lastErrorMsg.includes('Sign in') || lastErrorMsg.includes('cookies-from-browser') || lastErrorMsg.includes('confirm you\'re not a bot')) {
+      throw new Error('YouTube requires session authentication or bot verification for this video/track. Please paste your browser cookies in the Cookies & Auth settings or try another link.');
+    }
   }
 
   // Step 9: Intelligent, user-friendly error feedback

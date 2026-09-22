@@ -166,8 +166,10 @@ app.post('/api/info', async (req, res) => {
       console.error('[API /api/info] Bulk crawl fallback also failed:', bulkErr.message);
     }
     console.error('[API /api/info Error]:', err.message);
+    const isIgAuth = Boolean(err.isInstagramAuthRequired || (/instagram\.com/i.test(url) && (err.message || '').includes('Instagram requires session authentication')));
     res.status(422).json({
-      error: err.message || 'Unable to extract media from this link.'
+      error: err.message || 'Unable to extract media from this link.',
+      isInstagramAuthRequired: isIgAuth
     });
   }
 });
