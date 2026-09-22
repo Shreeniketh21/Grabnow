@@ -1,0 +1,23 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      "downloads/**",
+      "chrome_cookies_temp/**",
+      "*.py",
+      "*.bat",
+      "server.js",
+      "extractor.js",
+      "bulk_crawler.js"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

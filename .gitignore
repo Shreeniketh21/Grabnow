@@ -1,0 +1,38 @@
+# Node & Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# GrabNow Downloads & Temp data
+downloads/
+website/downloads/
+chrome_cookies_temp/
+website/chrome_cookies_temp/
+user_cookies.txt
+website/user_cookies.txt
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Vercel & Firebase cache
+.vercel
+.firebase
+
+# Android & IDE
+*.iml
+.gradle
+/local.properties
+/.idea/
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+/keystore.properties
+.kotlin

@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GrabNow — Universal Video & Audio Downloader</title>
+  <meta name="description" content="GrabNow is a high-speed, universal video and audio downloader. Download in MP4, MP3, 4K, 1080p from YouTube, TikTok, Instagram, Twitter/X, and 1000+ platforms." />
+  <meta name="keywords" content="video downloader, audio downloader, grabnow, youtube download, mp3 converter, mp4 download" />
+  
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Precision engineering backdrop -->
+  <div class="grid-backdrop" aria-hidden="true"></div>
+  <div class="radial-vignette" aria-hidden="true"></div>
+
+  <!-- Header -->
+  <header class="site-header" id="site-header">
+    <div class="container header-content">
+      <a href="#" class="brand-logo" id="brand-logo">
+        <div class="logo-symbol">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        </div>
+        <span class="brand-name">Grab<span class="brand-accent">Now</span></span>
+      </a>
+
+      <nav class="nav-menu" id="nav-menu">
+        <a href="#downloader" class="nav-link active">Downloader</a>
+        <a href="#supported-platforms" class="nav-link">Platforms</a>
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#history-section" class="nav-link">History</a>
+      </nav>
+
+      <div class="header-status">
+        <button type="button" class="harvester-tool-btn" id="live-harvester-btn" title="Extract media directly from active Instagram or web tab">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          <span>Live Harvester</span>
+        </button>
+        <button type="button" class="cookie-settings-btn" id="cookie-settings-btn" title="Configure session cookies for protected media">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <span>Cookies & Auth</span>
+          <span class="cookie-active-dot hidden" id="cookie-active-dot"></span>
+        </button>
+        <div class="status-indicator">
+          <span class="pulse-dot"></span>
+          <span class="status-text" id="engine-status">Engine Ready</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main App Section -->
+  <main class="main-content">
+    <section class="hero-section" id="downloader">
+      <div class="container">
+        <div class="hero-header-block">
+          <div class="engine-meta-row">
+            <span class="engine-status-tag">Engine v3.0</span>
+            <span class="engine-pipeline-tag">Direct Stream Pipeline</span>
+          </div>
+
+          <h1 class="hero-title">Universal Media Ingest &amp; Offline Vault</h1>
+
+          <p class="hero-subtitle">
+            Extract original-quality video, multi-track audio, photo galleries, and playlists from YouTube, VKontakte, Instagram, Twitter/X, and 1,000+ sources. No throttling or waitwalls.
+          </p>
+        </div>
+
+        <!-- Downloader Input Box -->
+        <div class="downloader-card" id="downloader-card">
+          <form class="url-input-form" id="url-form">
+            <div class="input-wrapper">
+              <div class="input-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                </svg>
+              </div>
+
+              <input 
+                type="url" 
+                id="url-input" 
+                class="url-input" 
+                placeholder="Paste video or audio link here (e.g. YouTube, TikTok, IG)..." 
+                required 
+                autocomplete="off" 
+                spellcheck="false"
+              />
+
+              <div class="input-actions">
+                <button type="button" class="action-chip" id="paste-btn" title="Paste from clipboard">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                  </svg>
+                  <span>Paste</span>
+                </button>
+
+                <button type="button" class="action-chip btn-clear hidden" id="clear-btn" title="Clear input">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="fetch-btn">
+              <span class="btn-text">Grab Media</span>
+              <div class="btn-spinner hidden" id="fetch-spinner"></div>
+              <svg class="btn-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </button>
+          </form>
+
+          <!-- Quick platform tags -->
+          <div class="supported-tags">
+            <span class="tag-label">Popular:</span>
+            <button type="button" class="platform-pill" data-platform="YouTube">YouTube</button>
+            <button type="button" class="platform-pill" data-platform="TikTok">TikTok</button>
+            <button type="button" class="platform-pill" data-platform="Instagram">Instagram</button>
+            <button type="button" class="platform-pill" data-platform="Twitter">X / Twitter</button>
+            <button type="button" class="platform-pill" data-platform="Facebook">Facebook</button>
+            <button type="button" class="platform-pill" data-platform="SoundCloud">SoundCloud</button>
+            <button type="button" class="platform-pill" data-platform="Reddit">Reddit</button>
+          </div>
+
+          <!-- Alert / Error message -->
+          <div class="alert-box hidden" id="error-alert">
+            <div class="alert-icon">⚠️</div>
+            <div class="alert-message" id="error-message">Unable to fetch video. Please check the URL.</div>
+          </div>
+        </div>
+
+        <!-- Result / Media Selector Card -->
+        <div class="result-container hidden" id="result-card">
+          <div class="media-card">
+            <!-- Thumbnail & Info -->
+            <div class="media-preview-col">
+              <div class="thumbnail-wrapper">
+                <img src="" alt="Video Thumbnail" class="media-thumbnail" id="res-thumbnail" />
+                <span class="duration-badge" id="res-duration">00:00</span>
+                <span class="platform-badge" id="res-extractor">YouTube</span>
+              </div>
+
+              <div class="media-meta">
+                <h3 class="media-title" id="res-title">Sample Video Title</h3>
+                <p class="media-uploader" id="res-uploader">By Creator Name</p>
+                <a href="#" target="_blank" rel="noopener noreferrer" class="media-source-link" id="res-link">
+                  Open original page
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                    <polyline points="15 3 21 3 21 9"/>
+                    <line x1="10" y1="14" x2="21" y2="3"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+
+            <!-- Download Options -->
+            <div class="media-options-col">
+              <!-- Format Tabs (Video vs Audio) -->
+              <div class="format-tabs">
+                <button type="button" class="tab-btn active" id="tab-video" data-tab="video">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="23 7 16 12 23 17 23 7"/>
+                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                  </svg>
+                  Video (MP4)
+                </button>
+                <button type="button" class="tab-btn" id="tab-audio" data-tab="audio">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 18V5l12-2v13"/>
+                    <circle cx="6" cy="18" r="3"/>
+                    <circle cx="18" cy="16" r="3"/>
+                  </svg>
+                  Audio (MP3)
+                </button>
+              </div>
+
+              <!-- Video Qualities List -->
+              <div class="format-content active" id="video-options-panel">
+                <div class="quality-grid" id="video-qualities-list">
+                  <!-- Dynamically populated -->
+                </div>
+              </div>
+
+              <!-- Audio Qualities List -->
+              <div class="format-content" id="audio-options-panel">
+                <div class="quality-grid" id="audio-qualities-list">
+                  <!-- Dynamically populated -->
+                </div>
+              </div>
+
+              <!-- Download Action CTA -->
+              <div class="download-action-bar">
+                <button type="button" class="cta-download-btn" id="start-download-btn">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  <span id="cta-label">Download Selected Quality</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Carousel / Photo Gallery Card -->
+        <div class="result-container hidden" id="carousel-card">
+          <div class="carousel-box">
+            <div class="carousel-header">
+              <div class="carousel-info-col">
+                <div class="carousel-badge-row">
+                  <span class="media-type-badge badge-carousel">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="18" height="18" rx="2"/>
+                      <circle cx="8.5" cy="8.5" r="1.5"/>
+                      <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                    <span id="carousel-badge-text">Photo Gallery</span>
+                  </span>
+                  <span class="platform-badge" id="carousel-platform">X / Twitter</span>
+                </div>
+                <h3 class="carousel-title" id="carousel-title">Gallery Title</h3>
+                <p class="media-uploader" id="carousel-uploader">By Creator</p>
+              </div>
+
+              <div class="carousel-ctrl-col">
+                <span class="selection-pill" id="carousel-selection-count">0 of 0 Selected</span>
+                <button type="button" class="btn-toggle-select" id="carousel-select-all-btn">
+                  <span>Deselect All</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Bulk Media Filter Toolbar -->
+            <div class="bulk-filter-toolbar" id="bulk-filter-toolbar">
+              <button type="button" class="bulk-filter-btn active" data-filter="all" id="filter-all-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                <span>All</span>
+                <span class="filter-count" id="filter-count-all">0</span>
+              </button>
+              <button type="button" class="bulk-filter-btn" data-filter="video" id="filter-video-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                <span>Videos</span>
+                <span class="filter-count" id="filter-count-video">0</span>
+              </button>
+              <button type="button" class="bulk-filter-btn" data-filter="image" id="filter-image-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <span>Images</span>
+                <span class="filter-count" id="filter-count-image">0</span>
+              </button>
+              <button type="button" class="bulk-filter-btn" data-filter="gif" id="filter-gif-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+                <span>GIFs</span>
+                <span class="filter-count" id="filter-count-gif">0</span>
+              </button>
+              <button type="button" class="bulk-filter-btn" data-filter="audio" id="filter-audio-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                <span>Audio / Music</span>
+                <span class="filter-count" id="filter-count-audio">0</span>
+              </button>
+            </div>
+
+            <!-- Photos Grid -->
+            <div class="carousel-grid" id="carousel-grid">
+              <!-- Dynamically rendered photo cards -->
+            </div>
+
+            <!-- Batch Actions Bar -->
+            <div class="carousel-actions-bar">
+              <div class="carousel-actions-left">
+                <button type="button" class="cta-download-btn" id="carousel-download-selected-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  <span id="carousel-cta-text">Download Selected Photos</span>
+                </button>
+              </div>
+              <div class="carousel-actions-right">
+                <button type="button" class="btn-secondary-action" id="carousel-download-zip-btn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                    <line x1="12" y1="22.08" x2="12" y2="12"/>
+                  </svg>
+                  <span>Download All as .ZIP</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Playlist / Collection Card -->
+        <div class="result-container hidden" id="playlist-card">
+          <div class="playlist-box">
+            <div class="playlist-header">
+              <div class="playlist-cover-wrapper">
+                <img src="" alt="Playlist Cover" class="playlist-cover" id="playlist-cover" />
+                <span class="playlist-count-pill" id="playlist-count-badge">0 Tracks</span>
+              </div>
+
+              <div class="playlist-meta-wrap">
+                <div class="playlist-badge-row">
+                  <span class="media-type-badge badge-playlist">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="8" y1="6" x2="21" y2="6"/>
+                      <line x1="8" y1="12" x2="21" y2="12"/>
+                      <line x1="8" y1="18" x2="21" y2="18"/>
+                      <line x1="3" y1="6" x2="3.01" y2="6"/>
+                      <line x1="3" y1="12" x2="3.01" y2="12"/>
+                      <line x1="3" y1="18" x2="3.01" y2="18"/>
+                    </svg>
+                    <span>Media Playlist</span>
+                  </span>
+                  <span class="platform-badge" id="playlist-platform">YouTube</span>
+                </div>
+                <h3 class="playlist-title" id="playlist-title">Collection Title</h3>
+                <p class="media-uploader" id="playlist-uploader">By Creator</p>
+              </div>
+
+              <div class="playlist-ctrl-col">
+                <span class="selection-pill" id="playlist-selection-count">0 Selected</span>
+                <button type="button" class="btn-toggle-select" id="playlist-select-all-btn">
+                  <span>Deselect All</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Playlist Items Scrollable List -->
+            <div class="playlist-items-container">
+              <div class="playlist-items-list" id="playlist-items-list">
+                <!-- Dynamically rendered playlist items -->
+              </div>
+            </div>
+
+            <!-- Playlist Actions Bar -->
+            <div class="playlist-actions-bar">
+              <button type="button" class="cta-download-btn" id="playlist-download-selected-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                <span id="playlist-cta-text">Download Selected Videos (0)</span>
+              </button>
+              <button type="button" class="cta-batch-btn" id="playlist-batch-download-btn" title="Download all selected videos simultaneously as ZIP">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                <span>Batch Download as ZIP</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Batch Playlist Progress Dashboard -->
+        <div class="result-container hidden" id="batch-progress-card">
+          <div class="batch-progress-box">
+            <div class="batch-progress-header">
+              <div class="batch-progress-title-wrap">
+                <span class="pulse-dot active"></span>
+                <h3 class="batch-progress-title" id="batch-heading">Downloading Playlist...</h3>
+              </div>
+              <div class="batch-progress-stats-row">
+                <span class="batch-stat-chip" id="batch-stat-completed">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span id="batch-completed-count">0</span> Done
+                </span>
+                <span class="batch-stat-chip" id="batch-stat-downloading">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <span id="batch-downloading-count">0</span> Active
+                </span>
+                <span class="batch-stat-chip" id="batch-stat-failed">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  <span id="batch-failed-count">0</span> Failed
+                </span>
+                <span class="batch-stat-chip" id="batch-stat-queued">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a3a3a3" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/></svg>
+                  <span id="batch-queued-count">0</span> Queued
+                </span>
+              </div>
+            </div>
+
+            <!-- Batch Controls & Options Strip -->
+            <div class="batch-controls-strip">
+              <label class="auto-save-toggle" title="Automatically triggers download to your computer as each video completes">
+                <input type="checkbox" id="batch-auto-save-toggle" checked />
+                <span class="toggle-slider"></span>
+                <span class="toggle-text">⚡ Auto-save each video to PC as it finishes</span>
+              </label>
+              <button type="button" class="btn-package-now hidden" id="batch-package-now-btn" title="Download whatever videos have finished so far as a ZIP archive">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Download Ready (<span id="batch-ready-num">0</span>) as ZIP</span>
+              </button>
+            </div>
+
+            <div class="batch-overall-progress">
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="batch-progress-fill" style="width: 0%;"></div>
+              </div>
+              <span class="progress-percent" id="batch-progress-percent">0%</span>
+            </div>
+
+            <!-- Individual Item Status List -->
+            <div class="batch-items-scroll" id="batch-items-list">
+              <!-- Dynamically rendered per-item rows -->
+            </div>
+
+            <!-- Batch Ready Actions -->
+            <div class="batch-ready-actions hidden" id="batch-ready-box">
+              <a href="#" class="btn-file-save" id="batch-save-zip" download>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                <span>Save Playlist ZIP to Device</span>
+              </a>
+              <button type="button" class="btn-download-another" id="batch-retry-failed-btn">Retry Failed Items</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Download Progress / Terminal Card -->
+        <div class="progress-container hidden" id="progress-card">
+          <div class="progress-box">
+            <div class="progress-header">
+              <div class="progress-title-wrap">
+                <span class="pulse-dot active"></span>
+                <span class="progress-title" id="progress-heading">Processing Download...</span>
+              </div>
+              <span class="progress-percent" id="progress-percent">0%</span>
+            </div>
+
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" id="progress-fill" style="width: 0%;"></div>
+            </div>
+
+            <div class="progress-stats">
+              <div class="stat-item">
+                <span class="stat-label">Speed</span>
+                <span class="stat-value" id="stat-speed">-- KiB/s</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Size</span>
+                <span class="stat-value" id="stat-size">--</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Time Remaining</span>
+                <span class="stat-value" id="stat-eta">--:--</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Format</span>
+                <span class="stat-value" id="stat-format">MP4</span>
+              </div>
+            </div>
+
+            <div class="progress-ready-action hidden" id="ready-action-box">
+              <a href="#" class="btn-file-save" id="btn-save-file" download>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                <span>Save File to Device</span>
+              </a>
+              <button type="button" class="btn-download-another" id="btn-another">Grab Another Video</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Download History Tray -->
+    <section class="history-section" id="history-section">
+      <div class="container">
+        <div class="history-header">
+          <div class="history-title-wrap">
+            <h2 class="section-heading">Recent Downloads</h2>
+            <span class="history-counter" id="history-count">0 items</span>
+          </div>
+          <button type="button" class="btn-clear-history hidden" id="clear-history-btn">Clear All</button>
+        </div>
+
+        <div class="history-grid" id="history-list">
+          <div class="empty-history" id="empty-history-msg">
+            <div class="empty-icon">📂</div>
+            <p>Your download history will show up here during this session.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Supported Platforms Grid -->
+    <section class="platforms-section" id="supported-platforms">
+      <div class="container">
+        <div class="section-badge">Wide Compatibility</div>
+        <h2 class="section-title">Supported <span class="gradient-text">Platforms</span></h2>
+        <p class="section-desc">Download videos and audio streams from thousands of platforms without any restriction.</p>
+
+        <div class="platforms-grid">
+          <div class="platform-card">
+            <div class="platform-icon-circle yt">▶️</div>
+            <h3>YouTube</h3>
+            <p>4K, 1080p, 60fps, Shorts & MP3 audio tracks</p>
+          </div>
+
+          <div class="platform-card">
+            <div class="platform-icon-circle tt">🎵</div>
+            <h3>TikTok</h3>
+            <p>HD videos without watermarks, audio extractions</p>
+          </div>
+
+          <div class="platform-card">
+            <div class="platform-icon-circle ig">📸</div>
+            <h3>Instagram</h3>
+            <p>Reels, Stories, IGTV and post video downloads</p>
+          </div>
+
+          <div class="platform-card">
+            <div class="platform-icon-circle tw">✖️</div>
+            <h3>Twitter / X</h3>
+            <p>Embedded video clips and GIFs in high definition</p>
+          </div>
+
+          <div class="platform-card">
+            <div class="platform-icon-circle sc">☁️</div>
+            <h3>SoundCloud</h3>
+            <p>Lossless 320kbps MP3 & OPUS audio tracks</p>
+          </div>
+
+          <div class="platform-card">
+            <div class="platform-icon-circle rd">🤖</div>
+            <h3>Reddit</h3>
+            <p>Native videos with synchronized audio tracks</p>
+          </div>
+
+          <div class="platform-card">
+            <div class="platform-icon-circle fb">👥</div>
+            <h3>Facebook</h3>
+            <p>Public videos, Watch clips, and Reels</p>
+          </div>
+
+          <div class="platform-card">
+            <div class="platform-icon-circle more">🌐</div>
+            <h3>1,000+ More</h3>
+            <p>Vimeo, Dailymotion, Twitch clips, Bandcamp & more</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+      <div class="container">
+        <div class="section-badge">Why GrabNow</div>
+        <h2 class="section-title">Built for <span class="gradient-text">Speed & Fidelity</span></h2>
+
+        <div class="features-grid">
+          <div class="feature-item">
+            <div class="feature-icon">⚡</div>
+            <h3>Lightning Fast Engine</h3>
+            <p>Powered by an optimized yt-dlp core running on Node.js to stream and download at maximum line rate.</p>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon">💎</div>
+            <h3>Crystal Clear Up to 4K</h3>
+            <p>Preserve original visual quality with support for 4K UHD, 1440p, 1080p 60fps and HDR video streams.</p>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon">🎧</div>
+            <h3>Studio-Quality Audio</h3>
+            <p>Extract audio directly into 320kbps MP3 or lossless OPUS with clean metadata tags embedded.</p>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon">🛡️</div>
+            <h3>Zero Popups & Privacy First</h3>
+            <p>No redirects, no adware, no account required. Your downloads are private and automatically deleted.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div class="footer-brand">
+        <div class="logo-symbol small">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        </div>
+        <span class="brand-name">Grab<span class="brand-accent">Now</span></span>
+        <p class="footer-desc">Your personal high-speed media downloading engine.</p>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 GrabNow. Free, private, and open media processing engine.</p>
+        <p class="footer-note">Please respect copyright laws and content creators' rights when downloading media.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Cookies & Session Auth Modal -->
+  <div class="cookie-modal-backdrop hidden" id="cookie-modal">
+    <div class="cookie-modal-card">
+      <div class="cookie-modal-header">
+        <div class="cookie-modal-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <h2>Authentication & Cookies Settings</h2>
+        </div>
+        <button type="button" class="modal-close-btn" id="cookie-modal-close" aria-label="Close modal">✕</button>
+      </div>
+
+      <div class="cookie-modal-body">
+        <p class="cookie-modal-desc">
+          Some platforms (like Hotstar, JioHotstar, YouTube Members-Only, or Private Instagram posts) require account authentication. Paste your Netscape <code>cookies.txt</code> content or cookie string below to allow GrabNow to download protected videos.
+        </p>
+
+        <div class="cookie-input-block">
+          <label for="cookie-text-input" class="cookie-label">Paste Cookies (Netscape format or Header string):</label>
+          <textarea id="cookie-text-input" class="cookie-textarea" rows="6" placeholder="# Netscape HTTP Cookie File&#10;.hotstar.com TRUE / FALSE 0 hdnea st=171000..."></textarea>
+        </div>
+
+        <div class="cookie-modal-status" id="cookie-status-msg"></div>
+      </div>
+
+      <div class="cookie-modal-footer">
+        <button type="button" class="btn-secondary" id="cookie-clear-btn">Clear Cookies</button>
+        <button type="button" class="btn-primary" id="cookie-save-btn">Save Session Cookies</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Tab Harvester Modal -->
+  <div class="cookie-modal-backdrop hidden" id="harvester-modal">
+    <div class="cookie-modal-card harvester-modal-card">
+      <div class="cookie-modal-header">
+        <div class="cookie-modal-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          <h2>⚡ Live Instagram & Web Harvester</h2>
+        </div>
+        <button type="button" class="modal-close-btn" id="harvester-modal-close" aria-label="Close modal">✕</button>
+      </div>
+
+      <div class="cookie-modal-body">
+        <p class="cookie-modal-desc">
+          Capture <strong>every photo, reel, video, and audio track</strong> directly from the Instagram page you have open in Chrome — zero login walls, zero CAPTCHAs, right up to where you scrolled!
+        </p>
+
+        <div class="harvester-steps-grid">
+          <div class="harvester-step-card">
+            <div class="step-badge">Method 1 (Instant Drag & Drop)</div>
+            <p>Drag this bookmarklet button directly to your Chrome Bookmarks bar:</p>
+            <div class="bookmarklet-btn-wrapper">
+              <a href="javascript:(function(){const s=document.createElement('script');s.src='http://localhost:3000/instagram_live_harvester.js?t='+Date.now();document.body.appendChild(s);})();" class="bookmarklet-drag-btn" id="bookmarklet-link" title="Drag me to your Chrome bookmarks bar!">⚡ GrabNow Instagram Sniffer</a>
+            </div>
+            <span class="step-hint">Click this bookmark whenever you are on any Instagram profile or reel tab!</span>
+          </div>
+
+          <div class="harvester-step-card">
+            <div class="step-badge">Method 2 (Console Snippet)</div>
+            <p>Or copy this 1-line script and press <kbd>Enter</kbd> in your browser console (<kbd>F12</kbd>):</p>
+            <div class="script-copy-box">
+              <input type="text" readonly id="harvester-snippet-input" value="javascript:(function(){const s=document.createElement('script');s.src='http://localhost:3000/instagram_live_harvester.js?t='+Date.now();document.body.appendChild(s);})();" class="snippet-input" />
+              <button type="button" class="btn-copy-snippet" id="copy-snippet-btn">Copy</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="harvester-workflow-flow">
+          <div class="flow-item"><span class="flow-num">1</span> Scroll down on Instagram to load posts</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-item"><span class="flow-num">2</span> Click <strong>GrabNow Sniffer</strong></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-item"><span class="flow-num">3</span> Click <strong>Open in GrabNow</strong></div>
+        </div>
+      </div>
+
+      <div class="cookie-modal-footer">
+        <button type="button" class="btn-primary" id="paste-harvester-json-btn" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; margin-right: auto;">📋 Paste Harvester JSON</button>
+        <button type="button" class="btn-secondary" id="harvester-modal-close-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase Modular SDK & Analytics -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyC7mLKXdHkDthKPjSvEqBRMfhn_8vBcfzY",
+      authDomain: "relive-f7a68.firebaseapp.com",
+      databaseURL: "https://relive-f7a68-default-rtdb.firebaseio.com",
+      projectId: "relive-f7a68",
+      storageBucket: "relive-f7a68.firebasestorage.app",
+      messagingSenderId: "838179080716",
+      appId: "1:838179080716:web:208da9ceb376a0b8a57c29",
+      measurementId: "G-TLXD9MJEDY"
+    };
+
+    // Initialize Firebase & Analytics
+    try {
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+      window.firebaseApp = app;
+      window.firebaseAnalytics = analytics;
+      console.log("🔥 Firebase initialized: relive-f7a68");
+    } catch (err) {
+      console.warn("Firebase initialization warning:", err);
+    }
+  </script>
+
+  <!-- Frontend Logic -->
+  <script src="script.js"></script>
+</body>
+</html>
